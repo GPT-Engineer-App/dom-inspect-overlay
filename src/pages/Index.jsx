@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Box, Button, ChakraProvider, FormControl, FormLabel, Input, List, ListItem, Text, VStack, extendTheme, IconButton, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
+import { Box, Button, ChakraProvider, FormControl, FormLabel, Input, List, ListItem, Text, VStack, extendTheme, IconButton, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Select } from "@chakra-ui/react";
 import { FaMousePointer, FaSave, FaEdit, FaTrash } from "react-icons/fa";
 import { client } from "lib/crud";
 
@@ -16,6 +16,7 @@ const theme = extendTheme({
 const Index = () => {
   const [selectedElement, setSelectedElement] = useState(null);
   const [label, setLabel] = useState("");
+  const [category, setCategory] = useState("");
   const [elements, setElements] = useState([]);
   const iframeRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,6 +31,7 @@ const Index = () => {
   const saveElement = async () => {
     const elementData = {
       label,
+      category,
       tagName: selectedElement.tagName,
       innerText: selectedElement.innerText.slice(0, 50),
     };
@@ -69,12 +71,14 @@ const Index = () => {
                 <Text as="span" fontWeight="bold">
                   {element.label}:
                 </Text>{" "}
-                {element.tagName} - {element.innerText}
+                {element.tagName} - {element.innerText} - {element.category}
                 <IconButton
                   aria-label="Edit"
                   icon={<FaEdit />}
                   onClick={() => {
                     setSelectedElement(element);
+                    setLabel(element.label);
+                    setCategory(element.category || "");
                     onOpen();
                   }}
                 />
@@ -94,6 +98,13 @@ const Index = () => {
             <FormControl>
               <FormLabel>Label</FormLabel>
               <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Enter label for the element" />
+              <FormLabel mt={4}>Category</FormLabel>
+              <Select value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Select category">
+                <option value="Header">Header</option>
+                <option value="Footer">Footer</option>
+                <option value="Main Content">Main Content</option>
+                <option value="Sidebar">Sidebar</option>
+              </Select>
             </FormControl>
           </ModalBody>
           <ModalFooter>
